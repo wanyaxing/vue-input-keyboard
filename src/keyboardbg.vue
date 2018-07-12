@@ -53,7 +53,7 @@
                             @touchmove="keyTouchMove(num,$event)"
                             @mouseup="keyMouseUp(num)" @touchend="keyTouchEnd(num,$event)"
                             :num="num"
-                        >{{num}}</div>
+                        >{{isILoveYou&&[5,2,0].indexOf(num)>=0?{5:'I',2:'LOVE',0:'U'}[num]:num}}</div>
                     </div>
                 </div>
                 <div class="keyboard_btns">
@@ -91,7 +91,6 @@ export default {
         'visible':{type:[Boolean],default:false},
     },
     data(){
-        console.log('keyboardbg.vue.data()');
         return {
             numbers:[],
             number_touch:-1,
@@ -110,6 +109,9 @@ export default {
                 return parseFloat(this.numbers.join(''));
             }
             return null;
+        },
+        isILoveYou(){
+            return this.currentValue=='5201314';
         },
     },
     methods:{

@@ -23,7 +23,6 @@ export default {
         'placeholder':{type:String,default:'请选择'},
     },
     data(){
-        console.log('inputkeyboard.vue.data()');
         return {
             visible:false,
         }
