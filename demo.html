@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=750,user-scalable=no, target-densitydpi=device-dpi, minimal-ui">
+    <title>vue-input-keyboard</title>
+    <style type="text/css">
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+body {
+    color: #2c3e50;
+    background-color: #f1f4f8;
+    width: 750px;
+    font-size: 36px;
+    margin: 0 auto!important;
+    /*padding-bottom: 103px;*/
+    text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    font-family: PingFangSC-Light,'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+    </style>
+<body>
+<div id="app">
+<div>[HOME]</div>
+<center>
+    number:<inputkeyboard v-model="number" :decimals="2" placeholder="click to enter"/>
+</center>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="./dist/index.min.js"></script>
+
+<script>
+new Vue({
+    el: '#app',
+    data() {
+        return {
+            number: -12345,
+        }
+    },
+    methods: {
+
+    }
+})
+
+</script>
+</body>
+</html>
