@@ -102,7 +102,7 @@ export default {
     computed:{
         bodyWidth(){
             // return 640;
-            return Math.min(Math.max(document.body.offsetWidth,640),750);
+            return Math.min(document.body.offsetWidth,750);
         },
         currentValue(){
             if (this.numbers.length>0)
@@ -228,6 +228,10 @@ export default {
             {
                 if (num>=0)
                 {
+                    if (index==0 && howmany==0 && nums.length>0 && nums[0]=='-')
+                    {//负号左侧不可添加数字
+                        return false;
+                    }
                     nums.splice(index,howmany,num);
                 }
                 else if (num=='.')
@@ -477,7 +481,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+.keyboard_bg >>> *{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
 .keyboard_bg{
     position: fixed;
     top: 0;
@@ -557,7 +565,7 @@ export default {
     top:0;
     right: 0;
     line-height: 80px;
-    width: 150px;
+    width: 30%;
     text-align: center;
     color:#0089f8;
 }
