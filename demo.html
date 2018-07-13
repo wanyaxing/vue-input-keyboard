@@ -2,13 +2,15 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=750,user-scalable=no, target-densitydpi=device-dpi, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="white" />
+    <meta name="viewport" content="width=640,user-scalable=no, target-densitydpi=device-dpi, minimal-ui, viewport-fit=cover">
     <title>vue-input-keyboard</title>
     <style type="text/css">
 body {
     color: #2c3e50;
     background-color: #f1f4f8;
-    width: 750px;
+    width: 640px;
     font-size: 36px;
     margin: 0 auto!important;
     /*padding-bottom: 103px;*/
@@ -19,6 +21,8 @@ body {
     font-family: PingFangSC-Light,'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
 }
     </style>
 <body>
