@@ -235,6 +235,10 @@ export default {
             {//有数字存在则可以点击回退
                 return false;
             }
+            if (num=='+/-' && this.min>=0)
+            {//如果最小值不是负数，则负号不可用
+                return true;
+            }
 
             if (this.number_touch>=0)
             {//替换状态是否可替换
