@@ -1,5 +1,5 @@
 <template>
-    <div class="keyboard_bg" v-show="visible">
+    <div class="keyboard_bg" v-show="visible" @touchstart="preventEvent($event)">
         <div class="keyboard_overlay" @mouseup.self="hide" @touchend.self="hide"></div>
         <div class="keyboard_body"
             :style="{'width':bodyWidth+'px','margin-left':(0-bodyWidth/2)+'px'}"
@@ -326,20 +326,24 @@ export default {
             }
             return nums;
         },
+        // 禁止事件冒泡
+        preventEvent($event){
+            if ($event){$event.preventDefault();$event.stopPropagation();}
+        },
         // 触控左侧空白区域
         cursorTouchBefore:function($event){
-            if ($event){$event.preventDefault();$event.stopPropagation();}
+            this.preventEvent($event);
             this.cursor_index = 0 - (this.numbers.length) - 1;
         },
         // 触控当前数字
         numberTouch:function(index,$event){
-            if ($event){$event.preventDefault();$event.stopPropagation();}
+            this.preventEvent($event);
             this.number_touch = index;
             this.cursor_index = 0 - (this.numbers.length - index);
         },
         // 触控效果下的手指在转换替换状态下的触屏移动，分为移动到其他数字和移动到其他按键两种情况
         numberTouchMoveInTouch:function(index,$event){
-            if ($event){$event.preventDefault();$event.stopPropagation();}
+            this.preventEvent($event);
             if (this.number_touch>=0)
             {
                 var changedTouch = $event.changedTouches[0];
@@ -361,7 +365,7 @@ export default {
         },
         // 触控效果下的手指在转换替换状态下的触屏释放，分为其他数字和其他按键两种情况
         numberTouchEndInTouch:function(index,$event){
-            if ($event){$event.preventDefault();$event.stopPropagation();}
+            this.preventEvent($event);
             if (this.number_touch>=0)
             {
                 var changedTouch = $event.changedTouches[0];
@@ -383,7 +387,7 @@ export default {
         },
         //替换状态下，移动鼠标到其他数字，等于点击其他数字
         numberMouseOverInTouch:function(index,$event){
-            if ($event){$event.preventDefault();$event.stopPropagation();}
+            this.preventEvent($event);
             if (this.number_touch>=0 && this.number_touch!=index)
             {
                 // console.log($event);
@@ -410,12 +414,12 @@ export default {
         },
         // 数字触控效果取消
         numberTouchCancel:function($event){
-            if ($event){$event.preventDefault();$event.stopPropagation();}
+            this.preventEvent($event);
             this.number_touch = -1;
         },
         // 触控效果下的手指在按键上的移动
         keyTouchMove:function(num,$event){
-            if ($event){$event.preventDefault();$event.stopPropagation();}
+            this.preventEvent($event);
             var changedTouch = $event.changedTouches[0];
             var elem = document.elementFromPoint(changedTouch.clientX, changedTouch.clientY);
             var elemNum = elem.getAttribute('num');
@@ -426,7 +430,7 @@ export default {
         },
         // 触控效果下的手指在按键上释放
         keyTouchEnd:function(num,$event){
-            if ($event){$event.preventDefault();$event.stopPropagation();}
+            this.preventEvent($event);
             var changedTouch = $event.changedTouches[0];
             var elem = document.elementFromPoint(changedTouch.clientX, changedTouch.clientY);
             var elemNum = elem.getAttribute('num');
@@ -437,12 +441,12 @@ export default {
         },
         // 按键被点击或触控
         keyTouchOver:function(num,$event){
-            if ($event){$event.preventDefault();$event.stopPropagation();}
+            this.preventEvent($event);
             this.key_touch = num;
         },
         // 键盘按键上释放触控有两种情况，替换或追加
         keyMouseUp:function(num,$event){
-            if ($event){$event.preventDefault();$event.stopPropagation();}
+            this.preventEvent($event);
             if (this.number_touch>=0)
             {
                 this.replace(this.number_touch,num);
@@ -461,7 +465,7 @@ export default {
             this.hide();
         },
         clear:function($event){
-            if ($event){$event.preventDefault();$event.stopPropagation();}
+            this.preventEvent($event);
             this.updateNumbers([]);
         },
         hide:function(){
