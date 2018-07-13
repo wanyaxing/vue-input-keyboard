@@ -481,6 +481,15 @@ export default {
 };
 </script>
 
+<style>
+.body-prevent-class {
+    overflow: hidden;
+}
+.body-prevent-class {
+    touch-action: none;
+}
+</style>
+
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .keyboard_bg >>> *{
