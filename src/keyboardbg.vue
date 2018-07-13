@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div
-                    class="btn_cancel"
+                    class="btn_clear"
                     @mouseup="clear()" @touchend="clear($event)"
                     :class="{li_disable:(numbers.length==0)}"
                 >clear</div>
@@ -562,12 +562,12 @@ export default {
     position: relative;
     top: -3px;
 }
-.btn_cancel{
+.btn_clear{
     position: absolute;
     top:0;
     right: 0;
     line-height: 80px;
-    width: 30%;
+    width: 25%;
     text-align: center;
     color:#0089f8;
 }
