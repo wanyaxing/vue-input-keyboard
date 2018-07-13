@@ -33,7 +33,7 @@
                     class="btn_clear"
                     @mouseup="clear()" @touchend="clear($event)"
                     :class="{li_disable:(numbers.length==0)}"
-                >clear</div>
+                >{{tt('clear')}}</div>
             </div>
             <div
                 class="keyboard_frame"
@@ -68,7 +68,7 @@
                             @touchmove="keyTouchMove(num,$event)"
                             @mouseup="keyMouseUp(num)" @touchend="keyTouchEnd(num,$event)"
                             :num="num"
-                        ><span>{{num}}</span></div>
+                        ><span>{{tt(num)}}</span></div>
                     </div>
                 </div>
             </div>
@@ -77,18 +77,24 @@
 </template>
 
 <script>
+const messages = {
+    'delete':{'zh':'删除','en':'delete'},
+    'return':{'zh':'确认','en':'return'},
+    'clear' :{'zh':'清除','en':'clear'},
+}
+
 export default {
     name: 'keyboardbg',
     components:{
     },
     props:
     {
-        'value':{type:Number,default:0},
+        'value'    :{type:Number,default:0},
         'maxlength':{type:[String,Number],default:11,validator:function(v){return v>=1 && v<=11;}},//最大长度
-        'max':{type:[String,Number],default:99999999999,validator:function(v){return v>=-99999999999 && v<=99999999999;}},//最大值
-        'min':{type:[String,Number],default:-99999999999,validator:function(v){return v>=-99999999999 && v<=99999999999;}},//最小值
-        'decimals':{type:[String,Number],default:2,validator:function(v){return v>=0 && v<=9;}},//保留小数位数
-        'visible':{type:[Boolean],default:false},
+        'max'      :{type:[String,Number],default:99999999999,validator:function(v){return v>=-99999999999 && v<=99999999999;}},//最大值
+        'min'      :{type:[String,Number],default:-99999999999,validator:function(v){return v>=-99999999999 && v<=99999999999;}},//最小值
+        'decimals' :{type:[String,Number],default:2,validator:function(v){return v>=0 && v<=9;}},//保留小数位数
+        'visible'  :{type:[Boolean],default:false},
     },
     data(){
         return {
@@ -113,8 +119,26 @@ export default {
         isILoveYou(){
             return this.currentValue=='5201314';
         },
+        isCnLanguage(){
+            if (navigator.language)
+            {
+                return navigator.language=='zh-CN' || navigator.language=='zh';
+            }
+            return true;
+        },
     },
     methods:{
+        tt:function(str){
+            if (messages[str])
+            {
+                if (this.isCnLanguage)
+                {
+                    return messages[str]['zh'];
+                }
+                return messages[str]['en'];
+            }
+            return str;
+        },
         // 判断临时数字组有效性（如果无效，一般后续会放弃该数组）
         isDataValid:function(nums){
             if (nums===false)

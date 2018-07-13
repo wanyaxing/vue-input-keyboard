@@ -3,3 +3,4 @@ src/
 build/
 examples/
 package-lock.json
+package.json
