@@ -3,6 +3,9 @@
 
 [demo](http://jsfiddle.net/wanyaxing/41mzw0Ly/embedded/result,html,js/)
 
+![feature_mini](./examples/images/feature_mini.gif)
+
+
 ## 基础特性：
 * 支持输入常规的数字值，支持负数，支持小数。
 * 支持触控屏操作
@@ -17,6 +20,7 @@
     * 点击文本区左侧的空白区域则光标定位到首位字符左侧（当光标左侧没有字符时，点击删除键会删除首位字符）
     ![feature_cursor_move](./examples/images/feature_cursor_move.gif)
 * 预测数值有效性并动态展示按键的可点击状态
+
 
 ## 永无止尽的细节探索
 * 如果数值范围不包含0，这个问题很复杂，不过，搞定了，现在可以智能判断哪些键可用，一步步引导用户去输入数字最终达到有效范围之内。
@@ -44,16 +48,17 @@
     □ 支持PC网页里键盘动态位置展示
     □ ...
 
+
 ## props
 
 | property         |            type             | default      | description                                     |
 | ---------------- | :-------------------------: | :----------: | ----------------------------------------------- |
-|  min             |   String,Number             | -99999999999 |                                                 |
-|  max             |   String,Number             |  99999999999 |                                                 |
+|  min             |   String,Number             | -99999999999 |  max or min                                     |
+|  max             |   String,Number             |  99999999999 |  max or min                                     |
 |  maxlength       |   String,Number             |  11          |  (1-11)                                         |
 |  decimals        |   String,Number             |  0           |  (0-9)                                          |
-|  disabled        |   String,Boolean,Number     |  false       |                                                 |
-|  readonly        |   String,Boolean,Number     |  false       |                                                 |
+|  disabled        |   String,Boolean,Number     |  false       |  css class : input_disabled                     |
+|  readonly        |   String,Boolean,Number     |  false       |  css class : input_readonly                     |
 |  placeholder     |   String                    |  '...'       |                                                 |
 |  v-model         |   Number                    |  0           |                                                 |
 |  value           |   Number                    |  0           |                                                 |
@@ -115,6 +120,8 @@ new Vue({
 ```
     npm run build
 ```
+
+
 ## License
 
 MIT
