@@ -355,7 +355,7 @@ export default {
             {
                 index = 0;
             }
-            this.updateNumbers(this.numsOfSplice(index,1),1);
+            this.updateNumbers(this.numsOfSplice(index,1,'delete'),1);
         },
         //判断按键是否被禁用
         isLiDisable:function(num){
@@ -479,15 +479,31 @@ export default {
                 {
                     nums.splice(1,1);
                 }
-                // 优化首位为.的情况，追加为0.
-                while (nums.length>=1 && nums[0]=='.')
+                if (num=='delete')
                 {
-                    nums.splice(0,0,0);
+                    // 优化首位为.的情况，移除.
+                    while (nums.length>=1 && nums[0]=='.')
+                    {
+                        nums.splice(0,1);
+                    }
+                    // 优化首位为-.的情况，移除.
+                    while (nums.length>=2 && nums[0]=='-' && nums[1]=='.')
+                    {
+                        nums.splice(1,1);
+                    }
                 }
-                // 优化首位为-.的情况，追加为-0.
-                while (nums.length>=2 && nums[0]=='-' && nums[1]=='.')
+                else
                 {
-                    nums.splice(1,0,0);
+                    // 优化首位为.的情况，追加为0.
+                    while (nums.length>=1 && nums[0]=='.')
+                    {
+                        nums.splice(0,0,0);
+                    }
+                    // 优化首位为-.的情况，追加为-0.
+                    while (nums.length>=2 && nums[0]=='-' && nums[1]=='.')
+                    {
+                        nums.splice(1,0,0);
+                    }
                 }
             }
             return nums;
