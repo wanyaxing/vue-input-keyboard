@@ -469,21 +469,23 @@ export default {
             }
             if (nums.length>0)
             {
-                //移除首位0的情况
-                if (nums.length>=2 && nums[0]==0 && nums[1]!='.')
+                // 优化首位0的情况，移除首位0
+                while(nums.length>=2 && nums[0]==0 && nums[1]!='.')
                 {
                     nums.splice(0,1);
                 }
-                else if (nums.length>=3 && nums[0]=='-' && nums[1]==0 && nums[2]!='.')
+                // 优化首位-0的情况，移除首位-0
+                while(nums.length>=3 && nums[0]=='-' && nums[1]==0 && nums[2]!='.')
                 {
                     nums.splice(1,1);
                 }
-                // 优化首位为.的情况
-                if (nums.length>=1 && nums[0]=='.')
+                // 优化首位为.的情况，追加为0.
+                while (nums.length>=1 && nums[0]=='.')
                 {
                     nums.splice(0,0,0);
                 }
-                else if (nums.length>=2 && nums[0]=='-' && nums[1]=='.')
+                // 优化首位为-.的情况，追加为-0.
+                while (nums.length>=2 && nums[0]=='-' && nums[1]=='.')
                 {
                     nums.splice(1,0,0);
                 }
