@@ -357,7 +357,7 @@ export default {
             }
             this.updateNumbers(this.numsOfSplice(index,1),1);
         },
-        //判断按键是否可点击
+        //判断按键是否被禁用
         isLiDisable:function(num){
             var nums;
             if (num=='return')
@@ -373,16 +373,34 @@ export default {
                 //回车按键永远可点击
                 return false;
             }
-            if (num=='delete' && this.numbers.length>0)
-            {//有数字存在则可以点击回退
-                return false;
-            }
             if (num=='+/-' && this.minValue>=0)
             {//如果最小值不是负数，则负号不可用
                 return true;
             }
 
-            if (this.number_touch>=0)
+            if (num=='delete')
+            {
+                if (this.numbers.length==0)
+                {// 当前无值，不可点击删除
+                    return true;
+                }
+                else
+                {
+                    return false;//如果有值存在，则可以无脑回退删除。
+                    // if  (!this.isCurrentValueValid)
+                    // {//有数字存在，且当前值无效状态，则可以无脑回退。换句话说，如果当前值有效，则不可以无脑回退，必须验证可以回退才能回退
+                        // return false;
+                    // }
+                }
+                //预测删除后的值
+                // var index = this.numbers.length + this.cursor_index;
+                // if (index<0)
+                // {
+                //     index = 0;
+                // }
+                // nums = this.numsOfSplice(index,1,num);
+            }
+            else if (this.number_touch>=0)
             {//替换状态是否可替换
                 nums = this.numsOfSplice(this.number_touch,1,num);
             }
