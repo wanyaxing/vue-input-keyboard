@@ -469,16 +469,7 @@ export default {
             }
             if (nums.length>0)
             {
-                // 优化首位0的情况，移除首位0
-                while(nums.length>=2 && nums[0]==0 && nums[1]!='.')
-                {
-                    nums.splice(0,1);
-                }
-                // 优化首位-0的情况，移除首位-0
-                while(nums.length>=3 && nums[0]=='-' && nums[1]==0 && nums[2]!='.')
-                {
-                    nums.splice(1,1);
-                }
+                // 此处先处理首位为点的情况，后处理首位为0的情况，因为有点的情况只有最多一次，而有0的情况，很难说啊。
                 if (num=='delete')
                 {
                     // 优化首位为.的情况，移除.
@@ -504,6 +495,16 @@ export default {
                     {
                         nums.splice(1,0,0);
                     }
+                }
+                // 优化首位0的情况，移除首位0
+                while(nums.length>=2 && nums[0]==0 && nums[1]!='.')
+                {
+                    nums.splice(0,1);
+                }
+                // 优化首位-0的情况，移除首位-0
+                while(nums.length>=3 && nums[0]=='-' && nums[1]==0 && nums[2]!='.')
+                {
+                    nums.splice(1,1);
                 }
             }
             return nums;
