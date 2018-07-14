@@ -1,6 +1,6 @@
 {
   "name": "vue-input-keyboard",
-  "version": "1.06.1749",
+  "version": "1.07.1145",
   "description": "A keyboard of input with validator, for: numbers, telephone, IDs...",
   "main": "dist/index.umd.js",
   "module": "dist/index.esm.js",
