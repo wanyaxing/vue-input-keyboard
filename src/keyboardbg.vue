@@ -325,7 +325,7 @@ export default {
             this.updateNumbers(nums,1);
         },
         //触发按键
-        append:function(num){
+        trigger:function(num){
             if (num=='return')
             {//回车按键永远可点击
                 return this.submit();
@@ -336,9 +336,17 @@ export default {
             }
             else
             {
-                var index = this.numbers.length + this.cursor_index + 1;
-                this.updateNumbers(this.numsOfSplice(index,0,num));
+                if (this.number_touch>=0)
+                {//替换状态
+                    this.updateNumbers(this.numsOfSplice(this.number_touch,1,num));
+                }
+                else
+                {//追加状态（插入当前标位下一位）
+                    var index = this.numbers.length + this.cursor_index + 1;
+                    this.updateNumbers(this.numsOfSplice(index,0,num));
+                }
             }
+            this.number_touch = -1;
         },
         // 回退一格
         delete:function(){
@@ -348,12 +356,6 @@ export default {
                 index = 0;
             }
             this.updateNumbers(this.numsOfSplice(index,1),1);
-        },
-        // 替换数字
-        replace:function(index,num)
-        {
-            this.updateNumbers(this.numsOfSplice(index,1,num));
-            this.number_touch = null;
         },
         //判断按键是否可点击
         isLiDisable:function(num){
@@ -591,14 +593,7 @@ export default {
         // 键盘按键上释放触控有两种情况，替换或追加
         keyMouseUp:function(num,$event){
             this.preventEvent($event);
-            if (this.number_touch>=0)
-            {
-                this.replace(this.number_touch,num);
-            }
-            else
-            {
-                this.append(num);
-            }
+            this.trigger(num);
             this.key_touch = null;
         },
         submit:function(){
