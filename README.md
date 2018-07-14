@@ -30,13 +30,29 @@
     □ 支持自定义 return / delete / clear 按钮的文字
     □ 支持自定义高级按钮（如自定义增加步进增减按钮）
     □ 支持自定义指令v-inputkeyboard应用于任意元素或组件
+    □ 支持PC网页里键盘动态位置展示
     □ ...
 
+## props
+
+| property         |            type             | default      | description                                     |
+| ---------------- | :-------------------------: | :----------: | ----------------------------------------------- |
+|  min             |   String,Number             | -99999999999 |                                                 |
+|  max             |   String,Number             |  99999999999 |                                                 |
+|  maxlength       |   String,Number             |  11          |  (1-11)                                         |
+|  decimals        |   String,Number             |  0           |  (0-9)                                          |
+|  disabled        |   String,Boolean,Number     |  false       |                                                 |
+|  readonly        |   String,Boolean,Number     |  false       |                                                 |
+|  placeholder     |   String                    |  '...'       |                                                 |
+|  v-model         |   Number                    |  0           |                                                 |
+|  value           |   Number                    |  0           |                                                 |
+
+
 ## NPM
-```
+```html
 #install
 
-npm install vue-input-keyboard
+npm install vue-input-keyboard --save
 
 # main.js
 
@@ -49,7 +65,7 @@ Vue.use(require('vue-input-keyboard'))
 ```
 
 ## Browser
-```
+```html
 <body>
 <div id="app">
 <div>[HOME]</div>
