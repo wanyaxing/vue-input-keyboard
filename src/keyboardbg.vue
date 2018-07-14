@@ -3,6 +3,7 @@
         <div class="keyboard_overlay" @mouseup.self="hide" @touchend.self="hide"></div>
         <div class="keyboard_body"
             :style="{'width':bodyWidth+'px','margin-left':(0-bodyWidth/2)+'px'}"
+            :class="{keyboard_unvalid:!isCurrentValueValid}"
             @mouseup="numberTouchCancel()"
         >
             <div class="keyboard_header">
@@ -105,9 +106,26 @@ export default {
         }
     },
     computed:{
+        // 根据body宽度决定当前键盘宽度
         bodyWidth(){
             // return 640;
             return Math.min(document.body.offsetWidth,750);
+        },
+        // 获取最大值的最大长度
+        maxValueLength(){
+            return  Math.min((parseInt(this.max)+'').length + (this.decimals>0?parseInt(this.decimals)+1:0),this.maxlength);
+        },
+        // 获取最小值的最大长度
+        minValueLength(){
+            return  Math.min((parseInt(this.min)+'').length + (this.decimals>0?parseInt(this.decimals)+1:0),this.maxlength);
+        },
+        // 获得真实的最大字符长度(注意，最小值的长度和最大值的长度谁长谁短可不一定哦。)
+        realMaxLength(){
+            return Math.max(this.maxValueLength,this.minValueLength)
+        },
+        // 获得真实的最短字符长度（简单说就是0在有效方位内，则为1，否则就是整数部分的长度，和默认长度中的最小值）
+        realMinLength(){
+            return (0<=this.max && 0>=this.min)?1:Math.min((parseInt(this.max)+'').length,(parseInt(this.min)+'').length,this.maxlength)
         },
         currentValue(){
             if (this.numbers.length>0)
@@ -115,6 +133,10 @@ export default {
                 return parseFloat(this.numbers.join(''));
             }
             return null;
+        },
+        //当前值是否有效
+        isCurrentValueValid(){
+            return this.currentValue===null || this.isValValid(this.currentValue);
         },
         isILoveYou(){
             return this.currentValue=='5201314';
@@ -139,27 +161,22 @@ export default {
             }
             return str;
         },
-        // 判断临时数字组有效性（如果无效，一般后续会放弃该数组）
-        isDataValid:function(nums){
+        // 尝试将文本区内容转化成数字，返回 false 或 数字值
+        numsToFloat(nums){
             if (nums===false)
             {
                 return false;
             }
             if (nums.length==0)
             {
-                return true;
+                return 0;
             }
             else if (nums.length==1 && nums[0]=='-')
             {
-                return true;
+                return 0;
             }
-            var val = parseFloat(nums.join(''));
-            if (isNaN(val))
-            {
-                return false;
-            }
-            //不可以超出长度
-            if (nums.length>this.maxlength)
+            //字符不可以超出最大有效长度，超出长度是肯定不行的
+            if (nums.length>this.realMaxLength)
             {
                 return false;
             }
@@ -169,24 +186,123 @@ export default {
             {
                 return false;
             }
+            //转换成浮点型
+            var val = parseFloat(nums.join(''));
+            if (isNaN(val))
+            {
+                return false;
+            }
+            return val;
+        },
+        // 判断一个值是否有效
+        isValValid:function(val){
+            if (val===false)
+            {//如果不是有效数字，那肯定无效
+                return false;
+            }
 
-            return val>=this.min && val<=this.max;
+            if ((val+'').length<this.realMinLength)
+            {//如果字符数太少，那也无效
+                return false;
+            }
+
+            // 只有在数字范围内的才有效
+            return  val>=this.min && val<=this.max;
+        },
+        // 判断临时数字组有效性（如果无效，一般后续会放弃该数组）
+        isDataValid:function(nums){
+
+            var val = this.numsToFloat(nums);
+
+            return this.isValValid(val);
+        },
+        // 判断一个数字组是否有可能有效，虽然现在无效，但将来有效呢
+        isDataMaybeValid:function(nums){
+            if (nums.length==0)
+            {//空数组总是可能有效的，未来无限可能
+                return true;
+            }
+
+            var val = this.numsToFloat(nums);
+
+            if (this.isValValid(val))
+            {// 如果确实有效，那肯定有效
+                return true;
+            }
+
+            if (val===false)
+            {//如果不是有效数字，那也肯定无效
+                return false;
+            }
+
+            // 因为字符数超过最大字符是肯定无效的，所以当前字符应该小于最大字符数。
+            // 这一步就是尝试补齐0或9到最大字符数，看看当前值在补齐后在未来是否有效
+            if (nums.length < this.realMaxLength)
+            {
+                if (this.max>0 && val>this.max)
+                {//大于最大正数，肯定无效
+                    return false;
+                }
+                if (this.min<0 && val<this.min)
+                {//小于最小负数，肯定无效
+                    return false;
+                }
+                // 只有当前正数小于最小正数 或 当前负数大于最大负数，才可能在未来有效
+                if ((val<this.min && val>0 && this.min>0) || (val>this.max && val<=0 && this.max<0))
+                {
+                    if (nums.length < this.maxValueLength)
+                    {
+                        if (nums.indexOf('.')>=0)
+                        {//如果已经有小数存在，则尝试无脑补齐9，看能否超过最小值，因为无脑补9是其变为最大值的唯一机会了。
+                            var decimalsCount = nums.length - (nums.indexOf('.')+1);
+                            if (this.decimals > decimalsCount)
+                            {
+                                var fillCount = this.decimals - decimalsCount;
+                                var tmp = parseFloat(nums.concat(Array(fillCount).join('9').split('')).join(''));
+                                if (!isNaN(tmp) && tmp>=this.min)
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                        else
+                        {//如果只是正整数，则尝试粘贴补齐末尾，看能否进入有效值区间
+                            var tmpMax = parseFloat(nums.join('') + (this.max+'').substr(nums.length));
+                            if (!isNaN(tmpMax) && tmpMax<=this.max && tmpMax>=this.min)
+                            {
+                                return true;
+                            }
+                            var tmpMin = parseFloat(nums.join('') + (this.min+'').substr(nums.length));
+                            if (!isNaN(tmpMin) && tmpMin<=this.max && tmpMin>=this.min)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
         },
         // 更新当前数字
-        updateNumbers:function(nums){
-            if (this.isDataValid(nums))
-            {
+        updateNumbers:function(nums,focusdUpdate=0){
+            if (focusdUpdate || this.isDataMaybeValid(nums))
+            {//只要数字有可能正常值，或强制更新，就暂时接受吧。比如 10-100范围的数字，你总要先输入个位数再输入十位数的。
                 this.numbers = nums;
-                if (nums.length + this.cursor_index<0)
+                if (this.numbers.length + this.cursor_index<0)
                 {
-                    this.cursor_index = 0 - Math.max(nums.length) - 1;
+                    this.cursor_index = 0 - Math.max(this.numbers.length) - 1;
                 }
             }
         },
         // 从父路由给的值更新数字
         updateValue:function(val){
             var nums = (val+'').split('');
-            this.updateNumbers(nums);
+            this.updateNumbers(nums,1);
         },
         //触发按键
         append:function(num){
@@ -211,7 +327,7 @@ export default {
             {
                 index = 0;
             }
-            this.updateNumbers(this.numsOfSplice(index,1));
+            this.updateNumbers(this.numsOfSplice(index,1),1);
         },
         // 替换数字
         replace:function(index,num)
@@ -226,6 +342,10 @@ export default {
             {
                 if (this.number_touch>=0)
                 {// 替换状态下，不可点击回车。
+                    return true;
+                }
+                else if (!this.isCurrentValueValid)
+                {// 当前值无效，不可点击回车
                     return true;
                 }
                 //回车按键永远可点击
@@ -249,7 +369,7 @@ export default {
                 var index = this.numbers.length + this.cursor_index + 1;
                 nums = this.numsOfSplice(index,0,num);
             }
-            return nums===false || !this.isDataValid(nums) || nums.join('')==this.numbers.join('');
+            return nums===false || nums.join('')==this.numbers.join('') || (!this.isDataMaybeValid(nums));
         },
         //获得替换或追加指定位后的临时值
         numsOfSplice:function(index,howmany,num){
@@ -462,11 +582,11 @@ export default {
             this.key_touch = null;
         },
         submit:function(){
-            if (!isNaN(this.currentValue))
+            if (this.isCurrentValueValid)
             {
                 this.$emit('input',this.currentValue);
+                this.hide();
             }
-            this.hide();
         },
         clear:function($event){
             this.preventEvent($event);
@@ -492,6 +612,11 @@ export default {
         }
     },
     mounted() {
+        if (this.max<this.min)
+        {
+            alert('vue-input-keyboard: error! the prop of min or max is wrong! ');
+            return false;
+        }
         document.body.appendChild(this.$el);
         document.body.classList.add('body-prevent-class');
         this.$emit('open');
@@ -565,6 +690,9 @@ export default {
     height: 84px;
     position: relative;
 }
+.keyboard_unvalid .keyboard_numbers{
+    color:#fc1520;
+}
 .keyboard_header .keyboard_numbers .li_bg{
     display: inline-block;
     width: 9%;
@@ -598,6 +726,9 @@ export default {
     position: absolute;
     top: 0;
     right: 0;
+}
+.keyboard_unvalid .li_cursor_before:before,.keyboard_unvalid .li_cursor_after:after{
+    background-color:#fc1520;
 }
 .li_touch{
     position: relative;
