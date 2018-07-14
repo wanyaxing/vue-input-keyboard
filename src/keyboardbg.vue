@@ -113,11 +113,11 @@ export default {
         },
         // 将字符串转为数字
         maxValue(){
-            return parseFloat(this.max);
+            return Math.max(parseFloat(this.max),parseFloat(this.min));
         },
         // 将字符串转为数字
         minValue(){
-            return parseFloat(this.min);
+            return Math.min(parseFloat(this.max),parseFloat(this.min));
         },
         // 获取最大值的最大长度
         maxValueLength(){
