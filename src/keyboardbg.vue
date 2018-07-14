@@ -111,6 +111,14 @@ export default {
             // return 640;
             return Math.min(document.body.offsetWidth,750);
         },
+        // 将字符串转为数字
+        maxValue(){
+            return parseFloat(this.max);
+        },
+        // 将字符串转为数字
+        minValue(){
+            return parseFloat(this.min);
+        },
         // 获取最大值的最大长度
         maxValueLength(){
             return  Math.min((parseInt(this.max)+'').length + (this.decimals>0?parseInt(this.decimals)+1:0),this.maxlength);
@@ -125,7 +133,7 @@ export default {
         },
         // 获得真实的最短字符长度（简单说就是0在有效方位内，则为1，否则就是整数部分的长度，和默认长度中的最小值）
         realMinLength(){
-            return (0<=this.max && 0>=this.min)?1:Math.min((parseInt(this.max)+'').length,(parseInt(this.min)+'').length,this.maxlength)
+            return (0<=this.maxValue && 0>=this.minValue)?1:Math.min((parseInt(this.maxValue)+'').length,(parseInt(this.minValue)+'').length,this.maxlength)
         },
         currentValue(){
             if (this.numbers.length>0)
@@ -207,7 +215,7 @@ export default {
             }
 
             // 只有在数字范围内的才有效
-            return  val>=this.min && val<=this.max;
+            return  val>=this.minValue && val<=this.maxValue;
         },
         // 判断临时数字组有效性（如果无效，一般后续会放弃该数组）
         isDataValid:function(nums){
@@ -239,16 +247,16 @@ export default {
             // 这一步就是尝试补齐0或9到最大字符数，看看当前值在补齐后在未来是否有效
             if (nums.length < this.realMaxLength)
             {
-                if (this.max>0 && val>this.max)
+                if (this.maxValue>0 && val>this.maxValue)
                 {//大于最大正数，肯定无效
                     return false;
                 }
-                if (this.min<0 && val<this.min)
+                if (this.minValue<0 && val<this.minValue)
                 {//小于最小负数，肯定无效
                     return false;
                 }
                 // 只有当前正数小于最小正数 或 当前负数大于最大负数，才可能在未来有效
-                if ((val<this.min && val>0 && this.min>0) || (val>this.max && val<=0 && this.max<0))
+                if ((val>=0 && val<this.minValue) || (val<=0 && val>this.maxValue))
                 {
                     if (nums.length < this.maxValueLength)
                     {
@@ -258,24 +266,36 @@ export default {
                             if (this.decimals > decimalsCount)
                             {
                                 var fillCount = this.decimals - decimalsCount;
-                                var tmp = parseFloat(nums.concat(Array(fillCount).join('9').split('')).join(''));
-                                if (!isNaN(tmp) && tmp>=this.min)
-                                {
-                                    return true;
+                                var tmp = parseFloat(nums.concat(Array(fillCount + 1).join('9').split('')).join(''));
+                                if (!isNaN(tmp))
+                                {//如果无脑补了9之后，新正数大于最小正数，或新负数小于最大值，则说明新数有效
+                                    if ((tmp>0 && tmp>=this.minValue && this.minValue>=0) || (tmp<0 && tmp<=this.maxValue && this.maxValue<=0))
+                                    {
+                                        return true;
+                                    }
                                 }
                             }
                         }
                         else
-                        {//如果只是正整数，则尝试粘贴补齐末尾，看能否进入有效值区间
-                            var tmpMax = parseFloat(nums.join('') + (this.max+'').substr(nums.length));
-                            if (!isNaN(tmpMax) && tmpMax<=this.max && tmpMax>=this.min)
+                        {//如果当前值是整数，则尝试粘贴补齐末尾，看能否进入有效值区间
+                            var tmpStr,tmpVal;
+                            tmpStr = nums.join('') + (this.maxValue+'').substr(nums.length);
+                            if (!tmpStr.match(/^(-|)0[^\.]/))
                             {
-                                return true;
+                                tmpVal = parseFloat(tmpStr);
+                                if (!isNaN(tmpVal) && tmpVal<=this.maxValue && tmpVal>=this.minValue)
+                                {
+                                    return true;
+                                }
                             }
-                            var tmpMin = parseFloat(nums.join('') + (this.min+'').substr(nums.length));
-                            if (!isNaN(tmpMin) && tmpMin<=this.max && tmpMin>=this.min)
+                            tmpStr = nums.join('') + (this.minValue+'').substr(nums.length);
+                            if (!tmpStr.match(/^(-|)0[^\.]/))
                             {
-                                return true;
+                                tmpVal = parseFloat(tmpStr);
+                                if (!isNaN(tmpVal) && tmpVal<=this.maxValue && tmpVal>=this.minValue)
+                                {
+                                    return true;
+                                }
                             }
                         }
                     }
@@ -355,7 +375,7 @@ export default {
             {//有数字存在则可以点击回退
                 return false;
             }
-            if (num=='+/-' && this.min>=0)
+            if (num=='+/-' && this.minValue>=0)
             {//如果最小值不是负数，则负号不可用
                 return true;
             }
@@ -612,7 +632,7 @@ export default {
         }
     },
     mounted() {
-        if (this.max<this.min)
+        if (this.maxValue<this.minValue)
         {
             alert('vue-input-keyboard: error! the prop of min or max is wrong! ');
             return false;
