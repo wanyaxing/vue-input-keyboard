@@ -121,11 +121,11 @@ export default {
         },
         // 获取最大值的最大长度
         maxValueLength(){
-            return  Math.min((parseInt(this.max)+'').length + (this.decimals>0?parseInt(this.decimals)+1:0),this.maxlength);
+            return  Math.min((parseInt(this.maxValue)+'').length + (this.maxValue<0&&parseInt(this.maxValue)==0?1:0) + (this.decimals>0?parseInt(this.decimals)+1:0),this.maxlength);
         },
         // 获取最小值的最大长度
         minValueLength(){
-            return  Math.min((parseInt(this.min)+'').length + (this.decimals>0?parseInt(this.decimals)+1:0),this.maxlength);
+            return  Math.min((parseInt(this.minValue)+'').length + (this.minValue<0&&parseInt(this.minValue)==0?1:0) + (this.decimals>0?parseInt(this.decimals)+1:0),this.maxlength);
         },
         // 获得真实的最大字符长度(注意，最小值的长度和最大值的长度谁长谁短可不一定哦。)
         realMaxLength(){
