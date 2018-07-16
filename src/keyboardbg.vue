@@ -321,8 +321,11 @@ export default {
         },
         // 从父路由给的值更新数字
         updateValue:function(val){
-            var nums = (val+'').split('');
-            this.updateNumbers(nums,1);
+            if (val!==null && val!==undefined)
+            {
+                var nums = (val+'').split('');
+                this.updateNumbers(nums,1);
+            }
         },
         //触发按键
         trigger:function(num){
